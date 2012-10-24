@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">T2SensorLib</string>
+    <string name="start_alarm_service">Start Alarm Service</string>
+    <string name="stop_alarm_service">Stop Alarm Service</string>
+    <string name="service_started">Big Brother has started</string>
+    <string name="service_finished">Big Brother has finished</string>
+    <string name="service_label">Big Brother Service</string>
+    <string name="service_scheduled">Big Brother service has been started</string>        
+    <string name="service_unscheduled">Big Brother service has been stopped. It is no longer collecting data</string>
+    <string name="database_uri">http://admin:PA$$word12345@gap.t2health.org/couchdb/bigbrother</string>
+    
+</resources>
