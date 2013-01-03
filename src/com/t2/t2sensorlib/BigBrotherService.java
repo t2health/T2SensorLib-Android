@@ -74,7 +74,7 @@ import java.util.Set;
  * @author scott.coleman
  * 
  * BigBrotherService is a background service that polls parameters and saves them to disk as well as sending them
- * to the external database.
+ * to the external database .
  * 
  * BigBrotherService is started up by the main activity once every mBaseSamplePeriod seconds (defaults to 10 seconds).
  * It then continues to run as long as it detects activity.
