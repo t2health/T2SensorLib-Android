@@ -8,5 +8,7 @@
     <string name="service_scheduled">Big Brother service has been started</string>        
     <string name="service_unscheduled">Big Brother service has been stopped. It is no longer collecting data</string>
     <string name="database_uri">http://admin:PA$$word12345@gap.t2health.org/couchdb/bigbrother</string>
+    <string name="database_uri">http://ec2-50-112-197-66.us-west-2.compute.amazonaws.com/mongo/json.php</string> 
+    <string name="saveddatabase_uri">http://ec2-50-112-197-66.us-west-2.compute.amazonaws.com/mongo/json.php</string>    
     
 </resources>

@@ -354,15 +354,17 @@ public class BigBrotherService extends Service implements SensorEventListener, L
         mAbortService = false;    	
         
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-		String sessionId = sdf.format(new Date());
+		String sessionDate = sdf.format(new Date());
 		String userId = SharedPref.getString(this, "SelectedUser", 	"");
+		long sessionId = SharedPref.getLong(this, "bio_session_start_time", 0);
+		String appName = SharedPref.getString(this, "app_name", mAppId);
 		
 		// ----------------------------------------------------
 		// Create a data handler to handle outputting data
 		//	to files and database
 		// ----------------------------------------------------		
 		try {
-			mDataOutHandler = new DataOutHandler(this, userId,sessionId, mAppId );
+			mDataOutHandler = new DataOutHandler(this, userId,sessionDate, appName, DataOutHandler.DATA_TYPE_INTERNAL_SENSOR, sessionId );
 			mDataOutHandler.enableLogging(this);
 			mDataOutHandler.enableLogCat();
 			Log.d(TAG, "Initializing DataoutHandler"); // TODO: remove
@@ -660,7 +662,7 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	            			event.values[1] * event.values[1] + 
 	            			event.values[2] * event.values[2] 
 	            	);
-	            //	Log.i(TAG, "totalAcceleration = " + totalAcceleration);
+	            	//Log.i(TAG, "totalAcceleration = " + totalAcceleration);
 	            	
 	            	// Keep track of the max acceleration for this sample period
 	            	if (totalAcceleration > mMaxTotalAcceleration)
@@ -833,12 +835,17 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 				}
 		   		int networkType = mTelephonyManager.getPhoneType();		// For cell tower
 		   		
-		   		ObjectNode inner = JsonNodeFactory.instance.objectNode();    	
-				inner.put("CELLID", cellId);
+		   		try {
+					ObjectNode inner = JsonNodeFactory.instance.objectNode();    	
+					inner.put("CELLID", cellId);
 //				inner.put("MDN", myNumber);
-				inner.put("MDN", Long.parseLong(myNumber));
-				inner.put("NETWORK", setworkOperator);
-				dataNode.put("TELEPHONY", inner);
+					inner.put("MDN", Long.parseLong(myNumber));
+					inner.put("NETWORK", setworkOperator);
+					dataNode.put("TELEPHONY", inner);
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
 	    	}	   		
 	    	
 	   		// ------------------------------
