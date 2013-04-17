@@ -125,6 +125,7 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	private static final String mAppId = "BigBrotherService";	
 	
 	private String mLastSentSMSMd5 = "";
+
 	/**
 	 * Monitors  for new inbound and outbound SMS
 	 */
@@ -197,6 +198,9 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	 */
 	private Receiver commandReceiver;	
 
+	/**
+	 * Whether or not we're actively sampling Android sensors
+	 */
 	private boolean mSamplingActive = false;
 
 	/**
@@ -233,7 +237,6 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	 * Most recent GPS fix
 	 */
 	private Location mLocationFix;
-
 	
 	/**
 	 * Used to abort periodic samling
@@ -269,7 +272,6 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	 */
 	String currentUrl = null;	
 	
-	
 	/**
 	 * @author scott.coleman
 	 * 
@@ -304,7 +306,6 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	 */
 	TextMessage currentMMSMessage = null;	
 	
-	
 	/**
 	 * @author scott.coleman
 	 * 
@@ -338,8 +339,6 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	 * Used to track the state if the one and only phone call being tracked 
 	 */
 	public int mCurrentPhoneCallState = PhoneCall.T2_STATE_IDLE;;			// TelephonyManager.CALL_STATE_XXXX 
-	
-	
 	
     @Override
     public void onCreate() {
@@ -629,26 +628,6 @@ public class BigBrotherService extends Service implements SensorEventListener, L
      * Show a notification while this service is running.
      */
     private void showNotification() {
-        // In this sample, we'll use the same text for the ticker and the expanded notification
-//        CharSequence text = getText(R.string.service_started);
-//
-//        // Set the icon, scrolling text and timestamp
-//        Notification notification = new Notification(R.drawable.stat_sample, text,
-//                System.currentTimeMillis());
-//
-//        // The PendingIntent to launch our activity if the user selects this notification
-////        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-////                new Intent(this, T2BigBrotherActivity.class), 0);
-//
-//        // Set the info for the views that show in the notification panel.
-//        notification.setLatestEventInfo(this, getText(R.string.service_label),
-//                       text, contentIntent);
-//
-//        // Send the notification.
-//        // We use a layout id because it is a unique number.  We use it later to cancel.
-//        if (mNotificationManager != null) {
-//        	mNotificationManager.notify(R.string.service_started, notification);
-//        }
     }
 
     /**
@@ -1027,9 +1006,6 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	    			currentUrl = null;
 	    		}
 	    	}
-
-	    	
-	    	
 	    	
 	    	// ----------------------------------------------------
 			// Send data to output
@@ -1042,7 +1018,7 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 //			Intent intent = new Intent();
 //    		intent.setAction(Constants.ACTION_STATUS_BROADCAST);
 //    		intent.putExtra("message", item1.toString());
-//   			sendBroadcast(intent);	        
+//   		sendBroadcast(intent);	        
 		    
    			// Used to determine if we should continue sampling or wait for the next polling period
    			if (mMaxTotalAcceleration > mAccelerationThreshold) {
@@ -1382,9 +1358,6 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 			}
         }    
     }
-    
-    
-    
     
     /**
      * Causes sampleParameters() to run in the background.
