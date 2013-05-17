@@ -79,6 +79,8 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
 import org.t2health.lib1.DataOutHandler;
+import org.t2health.lib1.DataOutHandlerException;
+import org.t2health.lib1.DataOutHandlerTags;
 import org.t2health.lib1.SharedPref;
 import org.t2health.lib1.DataOutHandler.DataOutPacket;
 import com.example.t2sensorlib.R;
@@ -408,7 +410,13 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	   		//mRemoteDatabaseUri += myNumber; 
 	   		
 			Log.d(TAG, "Initializing database at " + mRemoteDatabaseUri); // TODO: remove
-			mDataOutHandler.initializeDatabase(dDatabaseName, dDesignDocName, dDesignDocId, byDateViewName, mRemoteDatabaseUri);
+			try {
+				mDataOutHandler.initializeDatabase(dDatabaseName, dDesignDocName, dDesignDocId, byDateViewName, mRemoteDatabaseUri);
+			} catch (DataOutHandlerException e) {
+				Log.e(TAG, e.toString());
+				e.printStackTrace();
+			}
+			mDataOutHandler.setRequiresAuthentication(false);				
 		}		
 		
 		// Log the version
@@ -419,7 +427,7 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 			String versionString = mAppId + " application version: " + applicationVersion;
 
 			DataOutPacket packet = mDataOutHandler.new DataOutPacket();
-			packet.add("version", versionString);
+			packet.add(DataOutHandlerTags.version, versionString);
 			mDataOutHandler.handleDataOut(packet);				
 
 		}
@@ -712,9 +720,9 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	    	// ------------------------------
 	    	if (SharedPref.getBoolean(this, "accelerometer", true)) {
 		    	if (mAccelerometerAccumulatorCount > 0) {
-					packet.add("ACCEL_Z", mAccelerometerAccumulator[2]/mAccelerometerAccumulatorCount);
-					packet.add("ACCEL_Y", mAccelerometerAccumulator[1]/mAccelerometerAccumulatorCount);
-					packet.add("ACCEL_X", mAccelerometerAccumulator[0]/mAccelerometerAccumulatorCount);
+					packet.add(DataOutHandlerTags.ACCEL_Z, mAccelerometerAccumulator[2]/mAccelerometerAccumulatorCount);
+					packet.add(DataOutHandlerTags.ACCEL_Y, mAccelerometerAccumulator[1]/mAccelerometerAccumulatorCount);
+					packet.add(DataOutHandlerTags.ACCEL_X, mAccelerometerAccumulator[0]/mAccelerometerAccumulatorCount);
 		        	
 		        	mAccelerometerAccumulatorCount = 0;
 		        	mAccelerometerAccumulator[0] = 0;
@@ -728,9 +736,9 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	    	// ------------------------------
 	    	if (SharedPref.getBoolean(this, "orientation", true)) {
 	        	if (mOrientationAccumulatorCount > 0) {
-					packet.add("ORIENT_Z", mOrientationAccumulator[2]/mOrientationAccumulatorCount);
-					packet.add("ORIENT_Y", mOrientationAccumulator[1]/mOrientationAccumulatorCount);
-					packet.add("ORIENT_X", mOrientationAccumulator[0]/mOrientationAccumulatorCount);
+					packet.add(DataOutHandlerTags.ORIENT_Z, mOrientationAccumulator[2]/mOrientationAccumulatorCount);
+					packet.add(DataOutHandlerTags.ORIENT_Y, mOrientationAccumulator[1]/mOrientationAccumulatorCount);
+					packet.add(DataOutHandlerTags.ORIENT_X, mOrientationAccumulator[0]/mOrientationAccumulatorCount);
 
 	            	mOrientationAccumulatorCount = 0;     
 	            	mOrientationAccumulator[0] = 0;
@@ -745,7 +753,7 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	    	// ------------------------------		    
 	    	if (SharedPref.getBoolean(this, "light", true)) {
 	        	if (mLightAccumulatorCount > 0) {
-	        		packet.add("LIGHT", mLightAccumulator / mLightAccumulatorCount);
+	        		packet.add(DataOutHandlerTags.LIGHT, mLightAccumulator / mLightAccumulatorCount);
 	
 			        mLightAccumulator = 0;
 		   			mLightAccumulatorCount = 0;
@@ -757,7 +765,7 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	    	if (SharedPref.getBoolean(this, "proximity", true)) {
 	        	if (mProximityAccumulatorCount > 0) {
 	        		
-	        		packet.add("PROXIMITY", mProximityAccumulator / mProximityAccumulatorCount);
+	        		packet.add(DataOutHandlerTags.PROXIMITY, mProximityAccumulator / mProximityAccumulatorCount);
 	
 			        mProximityAccumulator = 0;
 		   			mProximityAccumulatorCount = 0;
@@ -768,8 +776,8 @@ public class BigBrotherService extends Service implements SensorEventListener, L
         	// Battery Level
 	   		// ------------------------------
 	    	if (SharedPref.getBoolean(this, "battery", true)) {
-	        	packet.add("BATTERY_LEVEL", mBatteryLevel);
-	        	packet.add("BATTERY_STATUS", mBatteryStatus);
+	        	packet.add(DataOutHandlerTags.BATTERY_LEVEL, mBatteryLevel);
+	        	packet.add(DataOutHandlerTags.BATTERY_STATUS, mBatteryStatus);
 	    	}
 
 			// ------------------------------
@@ -779,7 +787,7 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 		   		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);	   		
 		   		boolean screenOn = pm.isScreenOn();
 		   		
-		   		packet.add("SCREEN", screenOn ? 1:0);
+		   		packet.add(DataOutHandlerTags.SCREEN, screenOn ? 1:0);
 	    	}
 	    	
 	   		// ------------------------------
@@ -788,7 +796,7 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	    	if (SharedPref.getBoolean(this, "model", true)) {
 	//	   		String phoneManufacturer = Build.MANUFACTURER;
 		   		String phoneModel = Build.MODEL;
-		   		packet.add("MODEL", phoneModel);
+		   		packet.add(DataOutHandlerTags.MODEL, phoneModel);
 	    	}
 	   		
 	   		// ------------------------------
@@ -800,8 +808,8 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 		   		String country = locale.getDisplayCountry();
 		   		String language = locale.getDisplayLanguage();
 	
-		   		packet.add("LOCALE_LANGUAGE", language);
-		   		packet.add("LOCALE_COUNTRY", country);
+		   		packet.add(DataOutHandlerTags.LOCALE_LANGUAGE, language);
+		   		packet.add(DataOutHandlerTags.LOCALE_COUNTRY, country);
 	    	}	   		
 	   		// ------------------------------
 	   		// Telephony parameters
@@ -834,9 +842,9 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 		   		int networkType = mTelephonyManager.getPhoneType();		// For cell tower
 		   		
 		   		try {
-					packet.add("TEL_CELLID", cellId);
-					packet.add("TEL_MDN", Long.parseLong(myNumber));
-					packet.add("TEL_NETWORK", setworkOperator);
+					packet.add(DataOutHandlerTags.TEL_CELLID, cellId);
+					packet.add(DataOutHandlerTags.TEL_MDN, Long.parseLong(myNumber));
+					packet.add(DataOutHandlerTags.TEL_NETWORK, setworkOperator);
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
@@ -848,10 +856,10 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	   		// ------------------------------
 	    	if (SharedPref.getBoolean(this, "location", true)) {
 	        	if (mLocationFix != null) {
-	        		packet.add("GPS_LON", mLocationFix.getLongitude());
-	        		packet.add("GPS_LAT", mLocationFix.getLatitude());
-	        		packet.add("GPS_SPEED", mLocationFix.getSpeed());
-	        		packet.add("GPS_TIME", mLocationFix.getTime());
+	        		packet.add(DataOutHandlerTags.GPS_LON, mLocationFix.getLongitude());
+	        		packet.add(DataOutHandlerTags.GPS_LAT, mLocationFix.getLatitude());
+	        		packet.add(DataOutHandlerTags.GPS_SPEED, mLocationFix.getSpeed());
+	        		packet.add(DataOutHandlerTags.GPS_TIME, mLocationFix.getTime());
 	        	}
 	    	}
 
@@ -862,7 +870,7 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	        	KeyguardManager keyguardManager = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
 	        	if (keyguardManager != null) {
 	        		boolean locked = keyguardManager.inKeyguardRestrictedInputMode();
-	        		packet.add("KEYLOCKED", locked ? 1:0);        		
+	        		packet.add(DataOutHandlerTags.KEYLOCKED, locked ? 1:0);        		
 	        	}
 	    	}        	
 
@@ -882,7 +890,7 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 						taskVector.add((listTasks.get(i).baseActivity.getPackageName()));
 					}
 					if (listTasks.size() > 0) {
-						packet.add("TASKS", taskVector);
+						packet.add(DataOutHandlerTags.TASKS, taskVector);
 					}
 		
 					//				for (int i = 0; i < listProcesses.size(); i++) {
@@ -925,9 +933,9 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 					}
 
 					ObjectNode inner = JsonNodeFactory.instance.objectNode();    	
-					packet.add("BLUETOOTH_ENABLED", bluetoothEnabled ? 1:0);			
+					packet.add(DataOutHandlerTags.BLUETOOTH_ENABLED, bluetoothEnabled ? 1:0);			
 					if (bluetoothEnabled) {
-						packet.add("BLUETOOTH_PAIREDDEVICES", vector);
+						packet.add(DataOutHandlerTags.BLUETOOTH_PAIREDDEVICES, vector);
 					}
 				} 
 	    	}			
@@ -960,12 +968,12 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 					}
 	
 					ObjectNode inner = JsonNodeFactory.instance.objectNode();    	
-					packet.add("WIFI_ENABLED", wifiEnabled ? 1:0);			
+					packet.add(DataOutHandlerTags.WIFI_ENABLED, wifiEnabled ? 1:0);			
 					
 					if (wifiEnabled) {
 //						inner.put("APSCAN", accessPoints);			
-						packet.add("WIFI_APSCAN", vector);			
-						packet.add("WIFI_CONNECTED_AP", connectedAccessPoint);			
+						packet.add(DataOutHandlerTags.WIFI_APSCAN, vector);			
+						packet.add(DataOutHandlerTags.WIFI_CONNECTED_AP, connectedAccessPoint);			
 					}
 				}
 	    	}			
@@ -974,9 +982,9 @@ public class BigBrotherService extends Service implements SensorEventListener, L
         	// If a phone call has been made then report it.
 	    	if (SharedPref.getBoolean(this, "phonecall", true)) {
 				if (mCurrentPhoneCall != null) {
-					packet.add("CALL_DIR", mCurrentPhoneCall.mDirection);
-					packet.add("CALL_REMOTENUM", mCurrentPhoneCall.mRemoteNumber);
-					packet.add("CALL_DURATION", mCurrentPhoneCall.mDuration);
+					packet.add(DataOutHandlerTags.CALL_DIR, mCurrentPhoneCall.mDirection);
+					packet.add(DataOutHandlerTags.CALL_REMOTENUM, mCurrentPhoneCall.mRemoteNumber);
+					packet.add(DataOutHandlerTags.CALL_DURATION, mCurrentPhoneCall.mDuration);
 	        	
 	        		mCurrentPhoneCall = null;
 	        	}
@@ -985,24 +993,24 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	    	// If a message has been made then report it.
 	    	if (SharedPref.getBoolean(this, "smsmessage", true)) {
 	    		if (currentSMSMessage != null) {
-	    			packet.add("SMS_DIR", currentSMSMessage.mDirection);
-					packet.add("SMS_REMOTENUM", currentSMSMessage.mRemoteNumber);
-					packet.add("SMS_LENGTH", currentSMSMessage.mLength);
+	    			packet.add(DataOutHandlerTags.SMS_DIR, currentSMSMessage.mDirection);
+					packet.add(DataOutHandlerTags.SMS_REMOTENUM, currentSMSMessage.mRemoteNumber);
+					packet.add(DataOutHandlerTags.SMS_LENGTH, currentSMSMessage.mLength);
 	    			currentSMSMessage = null;
 	    		}
 	    	}
 	    	if (SharedPref.getBoolean(this, "mmsmessage", true)) {
 	    		if (currentMMSMessage != null) {
 					ObjectNode inner = JsonNodeFactory.instance.objectNode();    	
-					packet.add("MMS_DIR", currentMMSMessage.mDirection);
-					packet.add("MMS_REMOTENUM", currentMMSMessage.mRemoteNumber);
-					packet.add("MMS_LENGTH", currentMMSMessage.mLength);
+					packet.add(DataOutHandlerTags.MMS_DIR, currentMMSMessage.mDirection);
+					packet.add(DataOutHandlerTags.MMS_REMOTENUM, currentMMSMessage.mRemoteNumber);
+					packet.add(DataOutHandlerTags.MMS_LENGTH, currentMMSMessage.mLength);
 	    			currentMMSMessage = null;
 	    		}
 	    	}
 	    	if (SharedPref.getBoolean(this, "webpage", true)) {
 	    		if (currentUrl != null) {
-	    			packet.add("WEBPAGE", currentUrl);	    			
+	    			packet.add(DataOutHandlerTags.WEBPAGE, currentUrl);	    			
 	    			currentUrl = null;
 	    		}
 	    	}
@@ -1010,7 +1018,12 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 	    	// ----------------------------------------------------
 			// Send data to output
 			// ----------------------------------------------------
-        	mDataOutHandler.handleDataOut(packet);	
+        	try {
+				mDataOutHandler.handleDataOut(packet);
+			} catch (DataOutHandlerException e) {
+				Log.e(TAG, e.toString());
+				e.printStackTrace();
+			}	
         	
 			// Send the sample to the activity for it to display
 //	        ObjectNode item1 = JsonNodeFactory.instance.objectNode();
