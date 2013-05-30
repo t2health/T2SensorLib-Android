@@ -78,12 +78,12 @@ import android.widget.Toast;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
-import org.t2health.lib1.DataOutHandler;
-import org.t2health.lib1.DataOutHandlerException;
-import org.t2health.lib1.DataOutHandlerTags;
 import org.t2health.lib1.SharedPref;
-import org.t2health.lib1.DataOutHandler.DataOutPacket;
 import com.example.t2sensorlib.R;
+import com.t2.dataouthandler.DataOutHandler;
+import com.t2.dataouthandler.DataOutHandler.DataOutPacket;
+import com.t2.dataouthandler.DataOutHandlerException;
+import com.t2.dataouthandler.DataOutHandlerTags;
 //import com.t2.bigbrother.R;
 import com.t2.t2sensorlib.Receiver.OnBioFeedbackMessageRecievedListener;
 
