@@ -81,9 +81,9 @@ import org.codehaus.jackson.node.ObjectNode;
 import org.t2health.lib1.SharedPref;
 import com.example.t2sensorlib.R;
 import com.t2.dataouthandler.DataOutHandler;
-import com.t2.dataouthandler.DataOutHandler.DataOutPacket;
 import com.t2.dataouthandler.DataOutHandlerException;
 import com.t2.dataouthandler.DataOutHandlerTags;
+import com.t2.dataouthandler.DataOutPacket;
 //import com.t2.bigbrother.R;
 import com.t2.t2sensorlib.Receiver.OnBioFeedbackMessageRecievedListener;
 
@@ -426,7 +426,7 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 			String applicationVersion = info.versionName;
 			String versionString = mAppId + " application version: " + applicationVersion;
 
-			DataOutPacket packet = mDataOutHandler.new DataOutPacket();
+			DataOutPacket packet = new DataOutPacket();
 			packet.add(DataOutHandlerTags.version, versionString);
 			mDataOutHandler.handleDataOut(packet);				
 
@@ -712,7 +712,7 @@ public class BigBrotherService extends Service implements SensorEventListener, L
 //		Log.e(TAG, "Recording Sample");   
 		
 	    synchronized (this) {
-			DataOutPacket packet = mDataOutHandler.new DataOutPacket();
+			DataOutPacket packet = new DataOutPacket();
 			ObjectNode dataNode = JsonNodeFactory.instance.objectNode();			
 
 	   		// ------------------------------
